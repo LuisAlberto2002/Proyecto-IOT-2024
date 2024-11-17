@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const port = 3000;
 const rutas = require('./src/rutas/rutas');
-const url = 'mongodb+srv://VulpesBlack:36944757Ara@vbdb.7dcjohk.mongodb.net/VBCompany?retryWrites=true&w=majority';
+const mongoUrl = 'mongodb+srv://VulpesBlack:36944757Ara@vbdb.7dcjohk.mongodb.net/VBCompany?retryWrites=true&w=majority';
 
 // Middleware to serve static files
 app.use(express.static('public'));
@@ -41,7 +41,7 @@ app.use(cors({
 
 
 mongoose.connect(mongoUrl).then(client=>{
-  app.listen(port,()=>{
+  app.listen(3001,()=>{
       console.log('VBDB ONLINE');
   })
 }).catch(err=>{
