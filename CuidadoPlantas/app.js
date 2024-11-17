@@ -19,7 +19,10 @@ app.get('/manage', (req, res) => {
 });
 app.get('/login', (req, res) => {
     res.sendFile(__dirname + '/public/login.html');
-  });
+});
+app.get('/new_account', (req, res) => {
+res.sendFile(__dirname + '/public/signup.html');
+});
 
 // Start the server
 app.listen(port, () => {
