@@ -1,15 +1,23 @@
-"id":"UUID"
-"usuario": "CuentaX",
-"PasswordHash": "hashpassword",
-"plantas": {
-    "[planta1]":{
-        "tipo": "tipo de planta",
-        "Ultima vez regado": Timestamp,
-        "status_show":true
-    },
-    "[planta2]":{
-        "tipo": "tipo de planta"
-        "Ultima vez regado": Timestamp
-        "status_show":true
+{
+    "id": "UUID",
+    "usuario": "CuentaX",
+    "PasswordHash": "hashpassword",
+    "token": "AJHSHDASNDSAVJMBEA",
+    "plantas": {
+      "planta1": "v0",
+      "temperatura1": "v1",
+      "planta2": "v2",
+      "temperatura2": "v3"
     }
-},
+}
+
+
+
+blynk.cloud
+
+token usuario: AJHSHDASNDSAVJMBEA
+plata1:
+    https://blynk.cloud.tokenAJHSHDASNDSAVJMBEA=v0 -> planta1
+    https://blynk.cloud.tokenAJHSHDASNDSAVJMBEA=v1 -> temperatura1
+    https://blynk.cloud.tokenAJHSHDASNDSAVJMBEA=v2 -> planta2
+    https://blynk.cloud.tokenAJHSHDASNDSAVJMBEA=v3 -> temperatura2
