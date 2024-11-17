@@ -1,11 +1,9 @@
 const express = require('express');
 const app = express();
-const cors = require('cors');
 const port = 3000;
 
 // Middleware to serve static files
 app.use(express.static('public'));
-app.use(cors());
 
 // Routes
 app.get('/', (req, res) => {
@@ -31,6 +29,3 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-app.use(cors({
-    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
-}));
