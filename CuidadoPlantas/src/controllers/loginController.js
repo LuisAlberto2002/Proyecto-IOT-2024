@@ -62,8 +62,16 @@ const login = async (req, res) => {
       return res.status(401).send('<h1>Invalid credentials</h1>');
     }
 
-    // Successful login
-    res.redirect('/dashboard'); // Redirect to the dashboard or another page
+    // Generate JWT
+    const token = jwt.sign({ id: user._id, role: user.role, token:user.token}, JWT_SECRET, { expiresIn: '1h' });
+
+    // Send token in a response with a redirect script
+    res.send(`
+      <script>
+        sessionStorage.setItem('token', '${token}');
+        window.location.href = '/dashboard';
+      </script>
+    `);
   } catch (error) {
     console.error(error);
     res.status(500).send('<h1>Internal Server Error</h1>');
