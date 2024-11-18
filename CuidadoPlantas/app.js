@@ -2,16 +2,27 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
-const port = 3000;
+const bodyParser = require('body-parser');
 const rutas = require('./src/rutas/rutas');
+const port = 3000;
+
+// MongoDB connection string
 const urlAxel = 'mongodb+srv://admin:admin@cluster0.dwmdwry.mongodb.net/Cluster0';
+
+// Middleware to parse form data
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Middleware to enable CORS
+app.use(cors());
 
 // Middleware to serve static files
 app.use(express.static('public'));
-app.use(cors());
+
+// Routes (defined after bodyParser)
 app.use('', rutas);
 
-// Routes
+// Routes for static HTML pages
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });

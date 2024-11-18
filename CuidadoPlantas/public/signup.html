@@ -98,16 +98,24 @@
       <h2>Sign Up</h2>
     </div>
     <div class="card-body">
-      <form>
+      <form action="/signup" method="POST">
         <div class="form-group">
-          <label for="username" class="form-label">Username</label>
-          <input type="text" id="username" class="form-control" placeholder="Enter your username">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" id="name" name="name" class="form-control" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
         </div>
         <div class="form-group">
           <label for="password" class="form-label">Password</label>
-          <input type="password" id="password" class="form-control" placeholder="Enter your password">
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
         </div>
-        <button type="submit" class="btn">Login</button>
+        <div class="form-group">
+          <label for="rfc" class="form-label">RFC</label>
+          <input type="text" id="rfc" name="token" class="form-control" placeholder="Enter your RFC" required>
+        </div>
+        <button type="submit" class="btn">Sign Up</button>
       </form>
       <div class="link">
         <p>Have an account? <a href="/login">Sign in</a></p>
