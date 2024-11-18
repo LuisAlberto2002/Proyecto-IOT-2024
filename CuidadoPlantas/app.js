@@ -2,16 +2,28 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
-const port = 3000;
+const bodyParser = require('body-parser');
 const rutas = require('./src/rutas/rutas');
 const mongoUrl = 'mongodb+srv://VulpesBlack:36944757Ara@vbdb.7dcjohk.mongodb.net/VBCompany?retryWrites=true&w=majority';
+const port = 3000;
+
+// MongoDB connection string
+const urlAxel = 'mongodb+srv://admin:admin@cluster0.dwmdwry.mongodb.net/Cluster0';
+
+// Middleware to parse form data
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Middleware to enable CORS
+app.use(cors());
 
 // Middleware to serve static files
 app.use(express.static('public'));
-app.use(cors());
-app.use('',rutas);
 
-// Routes
+// Routes (defined after bodyParser)
+app.use('', rutas);
+
+// Routes for static HTML pages
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
@@ -23,11 +35,13 @@ app.get('/dashboard', (req, res) => {
 app.get('/manage', (req, res) => {
   res.sendFile(__dirname + '/public/manage.html');
 });
+
 app.get('/login', (req, res) => {
-    res.sendFile(__dirname + '/public/login.html');
+  res.sendFile(__dirname + '/public/login.html');
 });
+
 app.get('/new_account', (req, res) => {
-res.sendFile(__dirname + '/public/signup.html');
+  res.sendFile(__dirname + '/public/signup.html');
 });
 
 // Start the server
@@ -41,9 +55,9 @@ app.use(cors({
 
 
 mongoose.connect(mongoUrl).then(client=>{
-  app.listen(3001,()=>{
+  app.listen(port,()=>{
       console.log('VBDB ONLINE');
   })
-}).catch(err=>{
-  console.log('VBDB DISSABLE', err);
-});
+  .catch((err) => {
+    console.log('VBDB DISABLED', err);
+  });

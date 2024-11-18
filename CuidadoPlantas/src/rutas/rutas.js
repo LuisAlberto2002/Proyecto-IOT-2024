@@ -1,11 +1,12 @@
-const router=require('express').Router();
-const express=require('express');
-const userControllers = require('./../controllers/controllers');
+const express = require('express');
+const router = express.Router();
+const { signup, login } = require('../controllers/loginController');
+
+// Middleware to parse JSON
 router.use(express.json());
-router.put('/login',userControllers.login);
 
+// Routes for login and signup
+router.post('/signup', signup);
+router.post('/login', login);
 
-
-
-
-module.exports=router;
+module.exports = router;
