@@ -55,9 +55,9 @@ app.use(cors({
 
 
 mongoose.connect(mongoUrl).then(client=>{
-  app.listen(port,()=>{
+  app.listen(3001,()=>{
       console.log('VBDB ONLINE');
-  })
+  })})
   .catch((err) => {
     console.log('VBDB DISABLED', err);
   });
