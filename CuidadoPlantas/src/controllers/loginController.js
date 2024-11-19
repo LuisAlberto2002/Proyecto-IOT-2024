@@ -53,17 +53,31 @@ const login = async (req, res) => {
     // Verify the user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).send('<h1>User not found</h1>');
+      return res.send(`
+        <script>
+          alert('User not found. Please try again.');
+          window.location.href = '/login';
+        </script>
+      `);
     }
 
     // Check the password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).send('<h1>Invalid credentials</h1>');
+      return res.send(`
+        <script>
+          alert('Invalid credentials. Please try again.');
+          window.location.href = '/login';
+        </script>
+      `);
     }
 
     // Generate JWT
-    const token = jwt.sign({ id: user._id, role: user.role, token:user.token}, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: user._id, role: user.role, token: user.token },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
     // Send token in a response with a redirect script
     res.send(`
@@ -74,9 +88,15 @@ const login = async (req, res) => {
     `);
   } catch (error) {
     console.error(error);
-    res.status(500).send('<h1>Internal Server Error</h1>');
+    res.status(500).send(`
+      <script>
+        alert('Internal Server Error. Please try again later.');
+        window.location.href = '/login';
+      </script>
+    `);
   }
 };
+
 
 
 module.exports = {
