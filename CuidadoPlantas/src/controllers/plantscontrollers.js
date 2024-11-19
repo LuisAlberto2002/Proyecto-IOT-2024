@@ -1,5 +1,4 @@
 require('mongoose')
-const { response } = require('express');
 const plantModel = require('./../Models/plantModel');
 const nodemailer = require('nodemailer');
 require('express');

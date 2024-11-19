@@ -9,4 +9,4 @@ const userSchema=new Schema({
     status:{type: String,require:true}
 })
 
-module.exports=model('users',userSchema);
+module.exports=model('clients',userSchema);
