@@ -42,7 +42,7 @@ class plantsController{
 
     }
     MostrarDatosPlanta(req,res){
-        const filter = {token:req.body.token};
+        const filter = {token:req.body.token, status: "Activo"};
         plantModel.find(filter).then((response)=>{
             res.send(response);
         }).catch((err)=>{
