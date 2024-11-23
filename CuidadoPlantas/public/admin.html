@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1b5e20, #4caf50);
+      font-family: 'Arial', sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      background: rgba(0, 128, 0, 0.9);
+      animation: fadeIn 2s ease-out;
+    }
+    h1 {
+      font-size: 3rem;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+    p {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      background: #2e7d32;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s;
+    }
+    button:hover {
+      background: #1b5e20;
+      transform: scale(1.1);
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Page</h1>
+    <p>Welcome to the administration dashboard</p>
+    <button onclick="alert('Admin privileges activated!')">Go</button>
+  </div>
+</body>
+</html>

@@ -6,7 +6,7 @@ const JWT_SECRET = 'your_secret_key';
 
 // User Signup
 const signup = async (req, res) => {
-  const { name, email, password, token } = req.body;
+  const { name, email, password, token , role} = req.body;
 
 
   console.log("Received signup data:", req.body);
@@ -14,6 +14,11 @@ const signup = async (req, res) => {
     return res.status(400).send("<h1>All fields are required</h1>");
   }
 
+  const validRoles = ["user", "admin"];
+  console.log(role)
+  if (!validRoles.includes(role)) {
+    return res.status(400).send("<h1>Invalid role specified</h1>");
+  }
   try {
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
@@ -28,14 +33,14 @@ const signup = async (req, res) => {
     const newUser = new User({
       name,
       email,
-      password: hashedPassword, 
-      role: "cliente",         
+      password: hashedPassword,
+      role,
       token,
-      status: "active",         
+      status: "active",
     });
 
     await newUser.save();
-
+    console.log("user saved",newUser);
     res.redirect("/login");
   } catch (error) {
     console.error("Error during signup:", error);
@@ -79,6 +84,13 @@ const login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
+    if (user.role == "admin"){
+      return res.status(200).send(`
+        <script>
+          window.location.href = '/admin';
+        </script>
+      `);
+    }
     // Send token in a response with a redirect script
     res.send(`
       <script>

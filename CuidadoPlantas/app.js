@@ -43,6 +43,9 @@ app.get('/login', (req, res) => {
 app.get('/new_account', (req, res) => {
   res.sendFile(__dirname + '/public/signup.html');
 });
+app.get('/admin', (req, res) => {
+  res.sendFile(__dirname + '/public/admin.html');
+});
 
 // Start the server
 app.listen(port, () => {
