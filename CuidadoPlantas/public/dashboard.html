@@ -86,16 +86,38 @@
 
     // Function to render the plant list
     function renderPlantList() {
+      const token = 'FNRKNSRF';
+      console.log(token);
       const plantList = document.getElementById('plantList');
       plantList.innerHTML = ''; // Clear the list
       plants.forEach((plant, index) => {
-        const li = document.createElement('li');
+        fetch('http://localhost:3000/Info-Planta',{
+          method:'POST',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body:JSON.stringify({
+            token:token
+          })
+        }).then((Response)=>{
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+              <span>${response.name} (type: ${response.type})</span>
+              <button class="btn btn-danger btn-sm" onclick="deletePlant(${response.name})">Delete</button>
+            `;
+            plantList.appendChild(li);
+
+        }).catch((err)=>{
+          console.log('Error al cargar las plantas')
+        })
+        /*const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
         li.innerHTML = `
           <span>${plant.name} (Moisture: ${plant.moisture})</span>
           <button class="btn btn-danger btn-sm" onclick="deletePlant(${index})">Delete</button>
         `;
-        plantList.appendChild(li);
+        plantList.appendChild(li);*/
       });
     }
 

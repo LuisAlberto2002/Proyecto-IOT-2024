@@ -57,7 +57,7 @@ app.use(cors({
 }));
 
 
-mongoose.connect(urlAxel).then(client=>{
+mongoose.connect(mongoUrl).then(client=>{
   app.listen(3001,()=>{
       console.log('VBDB ONLINE');
   })})
