@@ -62,10 +62,10 @@
 </head>
 <body style="background-image: url('./assets/bg.jpg');">
     <div class="navbar">
-      <h1>Dashboard de Plantas</h1>
+      <h1>Plants Dashboard</h1>
       <div class="button-group">
           <div id="hiddenContent" class="hidden-content"></div>
-          <button id="showTokenBtn">Mostrar Token</button>
+          <button id="showTokenBtn">Show Token</button>
           <button id="refreshBtn">Refresh</button>
       </div>
   </div>
@@ -86,7 +86,7 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         transition: background-color 0.3s ease;
     " onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'" onclick="agregarPlanta()">
-        Agregar
+        Add
     </button>
 
 
@@ -219,19 +219,32 @@
                 console.log(`https://blynk.cloud/external/api/get?token=${userToken}&${plant.pin}`)
                 const blynkResponse = await fetch(`https://blynk.cloud/external/api/get?token=${userToken}&${plant.pin}`);
                 console.log(blynkResponse)
-                const pinValue = await blynkResponse.text(); // El valor es un texto simple
-  
+                const pinValueText = await blynkResponse.text(); 
+                const pinValue = parseFloat(pinValueText);
+
+                let statusBox = '';
+                if (pinValue <= 5) {
+                  statusBox = `<div style="color: white; background-color: red; padding: 10px; margin-top: 10px; border-radius: 5px;">
+                    <strong>¡Critical!</strong> The plant need immediate attention.
+                  </div>`;
+                } else if (pinValue < 15) {
+                  statusBox = `<div style="color: white; background-color: orange; padding: 5px; margin-top: 5px; border-radius: 10px;">
+                    <strong>¡Warning!</strong> The plant need water.
+                  </div>`;
+                }
+
                 // Crear la tarjeta de la planta
                 const li = document.createElement('div');
                 li.innerHTML = `
                 <div class="pCard" style="border: 1px solid #ccc; border-radius: 8px; padding: 20px; width: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                    <h3 class="title">${plant.name}</h3>
+                    <h3 class="title">${plant.name.charAt(0).toUpperCase() + plant.name.slice(1)}</h3>
                     <br>
                     <hr>
                     <br>
                     <p class="attributes">Type: ${plant.type}</p>
-                    <p class="attributes">Value: ${pinValue}</p>
+                    <p class="attributes">Moisture: ${pinValue}%</p>
                     <p class="attributes">Pin: ${plant.pin}</p>
+                    ${statusBox}
                     <br>
                     <hr>
                     <br>
@@ -257,7 +270,7 @@
       }
 
       document.addEventListener('DOMContentLoaded', fetchDashboard);
-      setInterval(fetchDashboard, 15 * 60 * 1000); // 15 minutos
+      setInterval(fetchDashboard, 5 * 60 * 1000); // 5 minutos
     </script>
     
 </body>
