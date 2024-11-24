@@ -7,6 +7,10 @@ const rutas = require('./src/rutas/rutas');
 const mongoUrl = 'mongodb+srv://VulpesBlack:36944757Ara@vbdb.7dcjohk.mongodb.net/VBCompany?retryWrites=true&w=majority';
 const port = 3000;
 
+require('./src/controllers/cronjobs')
+
+
+
 // MongoDB connection string
 const urlAxel = 'mongodb+srv://admin:admin@cluster0.dwmdwry.mongodb.net/Cluster0';
 
@@ -57,7 +61,7 @@ app.use(cors({
 }));
 
 
-mongoose.connect(mongoUrl).then(client=>{
+mongoose.connect(urlAxel).then(client=>{
   app.listen(3001,()=>{
       console.log('VBDB ONLINE');
   })})

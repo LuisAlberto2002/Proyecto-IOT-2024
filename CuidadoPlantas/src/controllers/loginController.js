@@ -1,117 +1,93 @@
-const User = require('../Models/userModel'); 
-const bcrypt = require('bcrypt'); // For password hashing
+const User = require('../Models/userModel');
+const bcrypt = require('bcrypt'); // Para hash de contraseñas
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = 'your_secret_key';
+const JWT_SECRET = 'clase_IoT';
 
-// User Signup
+// Registro de usuarios
 const signup = async (req, res) => {
-  const { name, email, password, token , role} = req.body;
+    const { name, email, password, token, role } = req.body;
+    console.log('Datos recibidos para registro:', req.body);
 
-
-  console.log("Received signup data:", req.body);
-  if (!name || !email || !password || !token) {
-    return res.status(400).send("<h1>All fields are required</h1>");
-  }
-
-  const validRoles = ["user", "admin"];
-  console.log(role)
-  if (!validRoles.includes(role)) {
-    return res.status(400).send("<h1>Invalid role specified</h1>");
-  }
-  try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).send("<h1>User already exists</h1>");
+    if (!name || !email || !password || !token) {
+        return res.status(400).send("<h1>Todos los campos son obligatorios</h1>");
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        // Verificar si el usuario ya existe
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            console.error('El usuario ya existe:', email);
+            return res.status(400).send("<h1>El usuario ya existe</h1>");
+        }
 
-    // Save the new user to the database
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-      role,
-      token,
-      status: "active",
-    });
+        // Crear y guardar un nuevo usuario
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, email, password: hashedPassword, role, token, status: "active" });
+        await newUser.save();
+        console.log('Usuario guardado en la base de datos:', newUser);
 
-    await newUser.save();
-    console.log("user saved",newUser);
-    res.redirect("/login");
-  } catch (error) {
-    console.error("Error during signup:", error);
-    res.status(500).send("<h1>Internal Server Error</h1>");
-  }
+        res.redirect('/login');
+    } catch (error) {
+        console.error('Error durante el registro:', error);
+        res.status(500).send("<h1>Error interno del servidor</h1>");
+    }
 };
 
-
-
-// User Login
+// Inicio de sesión
 const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log('Intento de inicio de sesión para el email:', email);
 
   try {
-    // Verify the user exists
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.send(`
-        <script>
-          alert('User not found. Please try again.');
-          window.location.href = '/login';
-        </script>
-      `);
-    }
+      // Verificar si el usuario existe
+      const user = await User.findOne({ email });
+      if (!user) {
+          console.error('Usuario no encontrado:', email);
+          return res.send(`
+              <script>
+                  alert('Usuario no encontrado. Por favor, intente nuevamente.');
+                  window.location.href = '/login';
+              </script>
+          `);
+      }
 
-    // Check the password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.send(`
-        <script>
-          alert('Invalid credentials. Please try again.');
-          window.location.href = '/login';
-        </script>
-      `);
-    }
+      // Verificar la contraseña
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+          console.error('Contraseña incorrecta para el email:', email);
+          return res.send(`
+              <script>
+                  alert('Credenciales inválidas. Por favor, intente nuevamente.');
+                  window.location.href = '/login';
+              </script>
+          `);
+      }
 
-    // Generate JWT
-    const token = jwt.sign(
-      { id: user._id, role: user.role, token: user.token },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+      // Generar JWT
+      const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+      console.log('Token del usuario:', user.token);
 
-    if (user.role == "admin"){
-      return res.status(200).send(`
-        <script>
-          window.location.href = '/admin';
-        </script>
+      // Enviar el token y el correo al cliente
+      res.send(`
+          <script>
+              // Guardar el correo y el token en sessionStorage
+              sessionStorage.setItem('jwt', '${token}');
+              sessionStorage.setItem('token', '${user.token}');
+              sessionStorage.setItem('email', '${email}');
+              window.location.href = '/dashboard';
+          </script>
       `);
-    }
-    // Send token in a response with a redirect script
-    res.send(`
-      <script>
-        sessionStorage.setItem('token', '${token}');
-        window.location.href = '/dashboard';
-      </script>
-    `);
   } catch (error) {
-    console.error(error);
-    res.status(500).send(`
-      <script>
-        alert('Internal Server Error. Please try again later.');
-        window.location.href = '/login';
-      </script>
-    `);
+      console.error('Error durante el inicio de sesión:', error);
+      res.status(500).send(`
+          <script>
+              alert('Error interno del servidor. Por favor, intente más tarde.');
+              window.location.href = '/login';
+          </script>
+      `);
   }
 };
 
 
-
-module.exports = {
-  signup,
-  login,
-};
+module.exports = { signup, login };
