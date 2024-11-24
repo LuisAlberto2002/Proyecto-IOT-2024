@@ -1,12 +1,11 @@
 const {Schema,model}=require('mongoose');
 
-const plantSchema=new Schema({
-    ID:{type:String, require:true},
-    token: {type:String, require:true},
-    name: {type:String, require:true},
-    type: {type: String, require: true},
-    status:{type: String, require:true},
-    pin: {type:String, require:true}
-})
+const plantSchema = new Schema({
+    ID: { type: String, required: true, unique: true, default: () => new mongoose.Types.ObjectId().toString() }, // Automatically assigned
+    token: { type: String, required: true },
+    name: { type: String, required: true, unique:true},
+    type: { type: String, required: true },
+    pin: { type: String, required: true },
+});
 
 module.exports=model('plants',plantSchema);

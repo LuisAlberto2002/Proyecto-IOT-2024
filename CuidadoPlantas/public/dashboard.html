@@ -47,41 +47,115 @@
         border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         transition: background-color 0.3s ease;
-    " onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+    " onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'" onclick="agregarPlanta()">
         Agregar
     </button>
-  <!-- Para añadir la planta podremos pedir atravez de popups los vlaores de token (se extrae del session storage)
-   name
-   type
-   pin  -->
-   <script>
-    async function fetchDashboard() {
+
+
+    <script>
+    async function agregarPlanta() {
+    try {
+      // Obtener los valores necesarios
+      const ID = window.prompt("Add the id of the plant:");
+      const name = window.prompt("Add name of the plant:");
+      const type = window.prompt("Add the type of the plant:");
+      const pin = window.prompt("Add the plan pin asociated (v#), example:v0':");
+      const token = sessionStorage.getItem("token");
+      const status = "active";
+
+      // Validar que todos los campos necesarios estén completos
+      if (!ID || !name || !type || !pin || !token) {
+        alert("Todos los campos son obligatorios.");
+        return;
+      }
+
+      // Crear el cuerpo del POST
+      const data = {
+        ID,
+        token,
+        name,
+        type,
+        status,
+        pin,
+      };
+
+      // Llamar al endpoint
+      const response = await fetch("/Agregar-Planta", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      // Manejar la respuesta
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message);
+        location.reload(); // Recargar la página para actualizar el dashboard
+      } else {
+        const error = await response.json();
+        alert("Error al agregar la planta: " + error.message);
+      }
+    } catch (err) {
+      console.error("Error al agregar la planta:", err);
+      alert("Ocurrió un error al agregar la planta.");
+    }
+  }
+    
+    async function deletePlant(plantName) {
       try {
-        // Obtener el token del usuario desde el sessionStorage
-        const userToken = sessionStorage.getItem('token'); // Cambiar 'token' según el nombre de tu clave
+        const userToken = sessionStorage.getItem('token');
         if (!userToken) {
           console.error('No se encontró el token del usuario en el sessionStorage.');
           return;
         }
-  
-        // Hacer una solicitud al servidor para obtener las plantas asociadas
-        const response = await fetch('/dashboard', {
+
+        // Solicitud al endpoint para eliminar la planta
+        const response = await fetch('/deletePlant', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userToken }),
+          body: JSON.stringify({ name: plantName, token: userToken }),
         });
-  
-        const data = await response.json();
-  
-        // Manejo del DOM: limpiar y llenar la lista de plantas
-        const plantList = document.getElementById('plantList');
-        plantList.innerHTML = ''; // Limpiar lista
-  
-        if (data.plants && data.plants.length > 0) {
+
+        const result = await response.json();
+        if (response.ok) {
+          console.log(result.message);
+          await fetchDashboard(); // Actualizar la lista de plantas
+        } else {
+          console.error(`Error: ${result.message}`);
+        }
+      } catch (error) {
+        console.error('Error al eliminar la planta:', error);
+      }
+    }
+    
+      // Función para cargar las plantas del dashboard
+      async function fetchDashboard() {
+        try {
+          const userToken = sessionStorage.getItem('token');
+          if (!userToken) {
+            console.error('No se encontró el token del usuario en el sessionStorage.');
+            return;
+          }
+    
+          const response = await fetch('/dashboard', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userToken }),
+          });
+    
+          const data = await response.json();
+    
+          const plantList = document.getElementById('plantList');
+          plantList.innerHTML = '';
+    
+          if (data.plants && data.plants.length > 0) {
           for (const plant of data.plants) {
-            if (plant.status !== 'inactive') {
               try {
                 // Obtener el valor del pin desde la API de Blynk
                 console.log(`https://blynk.cloud/external/api/get?token=${userToken}&${plant.pin}`)
@@ -103,7 +177,12 @@
                     <br>
                     <hr>
                     <br>
-                    <button style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Delete</button>
+                    <button 
+                      style="background-color: #f44336; color: white; border: none; padding: 10px; cursor: pointer;"
+                      value="${plant.name}"
+                      onclick="deletePlant(this.value)">
+                      Delete
+                    </button>
                 </div>
                 `;
                 plantList.appendChild(li);
@@ -111,20 +190,17 @@
                 console.error(`Error al obtener el valor del pin ${plant.pin} desde Blynk:`, blynkError);
               }
             }
-          }
         } else {
           plantList.innerHTML = '<li>No hay plantas registradas.</li>';
         }
       } catch (error) {
         console.error('Error al obtener los datos del dashboard:', error);
       }
-    }
-  
-    // Llamar a fetchDashboard cuando la página cargue
-    document.addEventListener('DOMContentLoaded', fetchDashboard);
-  
-    // Refrescar automáticamente cada 15 minutos
-    setInterval(fetchDashboard, 15 * 60 * 1000); // 15 minutos
-  </script>
+      }
+
+      document.addEventListener('DOMContentLoaded', fetchDashboard);
+      setInterval(fetchDashboard, 15 * 60 * 1000); // 15 minutos
+    </script>
+    
 </body>
 </html>
