@@ -33,7 +33,11 @@
 <body style="background-image: url('./assets/bg.jpg');">
   <h1 style="text-align: center; color: white;">Dashboard de Plantas</h1>
   <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px;" id="plantList"></div>
-
+  <button>Add Plant</button>
+  <!-- Para añadir la planta podremos pedir atravez de popups los vlaores de token (se extrae del session storage)
+   name
+   type
+   pin  -->
   <script>
     async function fetchDashboard() {
       try {
@@ -61,6 +65,7 @@
 
         if (data.plants && data.plants.length > 0) {
           data.plants.forEach((plant) => {
+            if (plant.status != "inactive"){
             const li = document.createElement('div');
             li.innerHTML = `
             <div class="pCard" style="border: 1px solid #ccc; border-radius: 8px; padding: 20px; width: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
@@ -78,6 +83,7 @@
             </div>
             `;
             plantList.appendChild(li);
+          }
           });
         } else {
           plantList.innerHTML = '<li>No hay plantas registradas.</li>';
