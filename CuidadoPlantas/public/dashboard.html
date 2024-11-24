@@ -33,21 +33,37 @@
 <body style="background-image: url('./assets/bg.jpg');">
   <h1 style="text-align: center; color: white;">Dashboard de Plantas</h1>
   <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px;" id="plantList"></div>
-  <button>Add Plant</button>
+  <button style="
+        background-color: #4CAF50; /* Verde */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+    " onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+        Agregar
+    </button>
   <!-- Para añadir la planta podremos pedir atravez de popups los vlaores de token (se extrae del session storage)
    name
    type
    pin  -->
-  <script>
+   <script>
     async function fetchDashboard() {
       try {
         // Obtener el token del usuario desde el sessionStorage
-        const userToken = sessionStorage.getItem('token'); // Cambiar 'user_token' según el nombre de tu clave
+        const userToken = sessionStorage.getItem('token'); // Cambiar 'token' según el nombre de tu clave
         if (!userToken) {
           console.error('No se encontró el token del usuario en el sessionStorage.');
           return;
         }
-
+  
         // Hacer una solicitud al servidor para obtener las plantas asociadas
         const response = await fetch('/dashboard', {
           method: 'POST',
@@ -56,35 +72,46 @@
           },
           body: JSON.stringify({ userToken }),
         });
-
+  
         const data = await response.json();
-
+  
         // Manejo del DOM: limpiar y llenar la lista de plantas
         const plantList = document.getElementById('plantList');
         plantList.innerHTML = ''; // Limpiar lista
-
+  
         if (data.plants && data.plants.length > 0) {
-          data.plants.forEach((plant) => {
-            if (plant.status != "inactive"){
-            const li = document.createElement('div');
-            li.innerHTML = `
-            <div class="pCard" style="border: 1px solid #ccc; border-radius: 8px; padding: 20px; width: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                <h3 class="title">${plant.name}</h3>
-                <br>
-                <hr>
-                <br>
-                <p class="attributes">Type: ${plant.type}</p>
-                <p class="attributes">Value: 22°C</p>
-                <p class="attributes">Pin: ${plant.pin}</p>
-                <br>
-                <hr>
-                <br>
-                <button style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Delete</button>
-            </div>
-            `;
-            plantList.appendChild(li);
+          for (const plant of data.plants) {
+            if (plant.status !== 'inactive') {
+              try {
+                // Obtener el valor del pin desde la API de Blynk
+                console.log(`https://blynk.cloud/external/api/get?token=${userToken}&${plant.pin}`)
+                const blynkResponse = await fetch(`https://blynk.cloud/external/api/get?token=${userToken}&${plant.pin}`);
+                console.log(blynkResponse)
+                const pinValue = await blynkResponse.text(); // El valor es un texto simple
+  
+                // Crear la tarjeta de la planta
+                const li = document.createElement('div');
+                li.innerHTML = `
+                <div class="pCard" style="border: 1px solid #ccc; border-radius: 8px; padding: 20px; width: 200px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <h3 class="title">${plant.name}</h3>
+                    <br>
+                    <hr>
+                    <br>
+                    <p class="attributes">Type: ${plant.type}</p>
+                    <p class="attributes">Value: ${pinValue}</p>
+                    <p class="attributes">Pin: ${plant.pin}</p>
+                    <br>
+                    <hr>
+                    <br>
+                    <button style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Delete</button>
+                </div>
+                `;
+                plantList.appendChild(li);
+              } catch (blynkError) {
+                console.error(`Error al obtener el valor del pin ${plant.pin} desde Blynk:`, blynkError);
+              }
+            }
           }
-          });
         } else {
           plantList.innerHTML = '<li>No hay plantas registradas.</li>';
         }
@@ -92,10 +119,10 @@
         console.error('Error al obtener los datos del dashboard:', error);
       }
     }
-
+  
     // Llamar a fetchDashboard cuando la página cargue
     document.addEventListener('DOMContentLoaded', fetchDashboard);
-
+  
     // Refrescar automáticamente cada 15 minutos
     setInterval(fetchDashboard, 15 * 60 * 1000); // 15 minutos
   </script>
