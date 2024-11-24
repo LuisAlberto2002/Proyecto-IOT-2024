@@ -269,8 +269,22 @@
       }
       }
 
+      let elapsedTime = 0; 
+      const interval = 1000; 
+      const reloadTime = 3 * 60; // Tiempo para recargar en segundos (5 minutos)
+
+      function clock() {
+        const timer = setInterval(() => {
+          elapsedTime++;
+          if (elapsedTime >= reloadTime) {
+            console.log("Se alcanzaron los 3 minutos. Recargando...");
+            clearInterval(timer); // Detener el temporizador
+            window.location.reload(); // Recargar la página
+          }
+        }, interval);
+      }
       document.addEventListener('DOMContentLoaded', fetchDashboard);
-      setInterval(fetchDashboard, 5 * 60 * 1000); // 5 minutos
+      clock()
     </script>
     
 </body>
