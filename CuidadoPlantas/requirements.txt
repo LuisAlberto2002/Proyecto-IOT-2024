@@ -1,1 +1,4 @@
 bcrypt
+axios
+node-cron
+ejs

@@ -5,8 +5,8 @@ require('dotenv').config();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const rutas = require('./src/rutas/rutas');
-const mongoUrl = `${process.env.URL1}${process.env.URL2}${process.env.URL3}${process.env.URL4}`
-const port = process.env.PortPage;
+const mongoUrl = 'mongodb+srv://VulpesBlack:36944757Ara@vbdb.7dcjohk.mongodb.net/VBCompany?retryWrites=true&w=majority';
+const port = 3000;
 
 // MongoDB connection string
 const urlAxel = 'mongodb+srv://admin:admin@cluster0.dwmdwry.mongodb.net/Cluster0';
@@ -44,6 +44,25 @@ app.get('/login', (req, res) => {
 app.get('/new_account', (req, res) => {
   res.sendFile(__dirname + '/public/signup.html');
 });
+app.get('/admin', (req, res) => {
+  res.sendFile(__dirname + '/public/admin.html');
+});
+
+app.post('/deletePlant', async (req, res) => {
+  const { name, token } = req.body;
+  console.log(name,token,"From endpoint")
+  try {
+    const deletedPlant = await plantModel.findOneAndDelete({ name:name, token:token });
+    console.log(deletedPlant)
+    if (deletedPlant) {
+      res.status(200).send({ message: 'Planta eliminada con éxito.',deletedPlant});
+    } else {
+      res.status(404).send({ message: 'Planta no encontrada.' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Error al eliminar la planta.', error });
+  }
+});
 
 // Start the server
 app.listen(port, () => {
@@ -56,7 +75,7 @@ app.use(cors({
 
 
 mongoose.connect(mongoUrl).then(client=>{
-  app.listen(process.env.PortMongo,()=>{
+  app.listen(3001,()=>{
       console.log('VBDB ONLINE');
   })})
   .catch((err) => {
