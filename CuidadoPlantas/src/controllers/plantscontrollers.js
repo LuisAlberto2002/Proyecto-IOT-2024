@@ -2,6 +2,8 @@ require('mongoose')
 const plantModel = require('./../Models/plantModel');
 const nodemailer = require('nodemailer');
 require('express');
+const LocalEmail = process.env.EMAIL;
+const passwd = process.env.PASSWD;
 
 class plantsController{
     agregarPlanta(req,res){
@@ -18,16 +20,18 @@ class plantsController{
     }
     tempPlanta(req,res){
         const {token, pin}=req.body;
-        const url = 'http://blynk.cloud/external/api/get?token='+token+'&'+pin;
+        const url = `http://blynk.cloud/external/api/get?token=${req.body.token}&${req.body.pin}`;
         fetch(url).then((response)=>{
             if(!response.ok){
                 res.send({message:'error en la respuesta' + response.status});
             }else{
+                //console.log(response.json());
                 res.send(response.json());
             }
         }).catch((error)=>{
             res.send({message: 'No se pudo obtener la temperatura de la planta'});
         })
+        
         
 
     }
@@ -68,28 +72,39 @@ class plantsController{
     }*/
     notificacionEstado(req,res){
         const email = req.body.email;
+        const motivo = req.body.motivo;
+        const namePlant = req.body.namePlant;
         const transporter=nodemailer.createTransport({
-            service:'gmail',
+            service:'hotmail',
             auth:{
-                user:'rendon.a.la@gmail.com',
-                pass:'218124505Ara*'
+                user:LocalEmail,
+                pass:passwd
             }
         });
-        const mailOptions={
-            from:'rendon.a.la@gmail.com',
-            to:email,
-            subject:'Alerta de temperatura',
-            text:'Una de tus plantas presenta altos niveles de humedad desde hace un tiempo, favor de revisar tus plantas'
-
-        };
+        let mailOptions={};
+        if(motivo === 'Humedad baja'){
+            mailOptions={
+                from:LocalEmail,
+                to:email,
+                subject:`Notificacion Cuidador de plantas: !!${motivo}!!`,
+                text:`La humedad de su planta '${namePlant}' se encuentra en niveles peligrosamente bajos, favor de medidas`    
+            };
+        }else{
+            mailOptions={
+                from:LocalEmail,
+                to:email,
+                subject:`Notificacion Cuidador de plantas: !!${motivo}!!`,
+                text:`La humedad de su planta '${namePlant}' se encuentra en niveles bastante altos, favor de tomar precauciones`  
+            };
+        }
         transporter.sendMail(mailOptions,(error,info)=>{
             if(error){
+                console.log(error);
                 res.status(400).send({message:'No se pudo enviar el correo electronico'});
             }else{
                 res.send({message:'correo enviado exitosamente',info});
             }
         })
-
 
     }
 

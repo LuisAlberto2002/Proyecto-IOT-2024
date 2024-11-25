@@ -15,7 +15,7 @@ router.post('/Agregar-Planta',plantsController.agregarPlanta);
 router.put('/eliminar-planta',plantsController.eliminarPlanta);
 router.post('/Info-Planta',plantsController.MostrarDatosPlanta);
 router.post('/Notificacion',plantsController.notificacionEstado);
-router.put('temperatura-planta',plantsController.tempPlanta);
+router.post('/temperatura-planta',plantsController.tempPlanta);
 
 
 
