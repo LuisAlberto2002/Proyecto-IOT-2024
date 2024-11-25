@@ -227,10 +227,52 @@
                   statusBox = `<div style="color: white; background-color: red; padding: 10px; margin-top: 10px; border-radius: 5px;">
                     <strong>¡Critical!</strong> The plant need immediate attention.
                   </div>`;
+                  fetch('http://localhost:3000/Notificacion',{
+                    method:"POST",
+                    headers:{
+                      "Content-Type": "applicacion/json"
+                    },
+                    body:JSON.stringify({
+                      email:"rendon.a.la@gmail.com",
+                      motivo:"Humedad baja",
+                      namePlant:"Cactus Maceta"
+                    })
+                  }).then((response)=>{
+                      if(!response.ok){
+                        console.log("Error en envio de notificacion");
+                      }else{
+                        console.log(response);
+
+                      }
+                  }).catch((err)=>{
+                    console.error("Error en la solicitud: ", err);
+
+                  })
                 } else if (pinValue < 15) {
                   statusBox = `<div style="color: white; background-color: orange; padding: 5px; margin-top: 5px; border-radius: 10px;">
                     <strong>¡Warning!</strong> The plant need water.
                   </div>`;
+                  fetch('http://localhost:3000/Notificacion',{
+                    method:"POST",
+                    headers:{
+                      "Content-Type": "applicacion/json"
+                    },
+                    body:JSON.stringify({
+                      email:"rendon.a.la@gmail.com",
+                      motivo:"Humedad Alta",
+                      namePlant:"Cactus Maceta"
+                    })
+                  }).then((response)=>{
+                      if(!response.ok){
+                        console.log("Error en envio de notificacion");
+                      }else{
+                        console.log(response);
+
+                      }
+                  }).catch((err)=>{
+                    console.error("Error en la solicitud: ", err);
+
+                  })
                 }
 
                 // Crear la tarjeta de la planta

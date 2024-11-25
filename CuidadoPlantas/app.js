@@ -5,8 +5,8 @@ require('dotenv').config();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const rutas = require('./src/rutas/rutas');
-const mongoUrl = 'mongodb+srv://VulpesBlack:36944757Ara@vbdb.7dcjohk.mongodb.net/VBCompany?retryWrites=true&w=majority';
-const port = 3000;
+const mongoUrl = `${process.env.URL1}${process.env.URL2}${process.env.URL3}${process.env.URL4}`;
+const port = process.env.PortPage;
 
 // MongoDB connection string
 const urlAxel = 'mongodb+srv://admin:admin@cluster0.dwmdwry.mongodb.net/Cluster0';
@@ -75,7 +75,7 @@ app.use(cors({
 
 
 mongoose.connect(mongoUrl).then(client=>{
-  app.listen(3001,()=>{
+  app.listen(process.env.portMongo,()=>{
       console.log('VBDB ONLINE');
   })})
   .catch((err) => {
